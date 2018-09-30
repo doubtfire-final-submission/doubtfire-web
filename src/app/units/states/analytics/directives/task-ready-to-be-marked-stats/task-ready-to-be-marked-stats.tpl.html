@@ -1,0 +1,29 @@
+<div class="task-ready-to-be-marked-stats">
+  <div class="panel-body">
+    <!-- check if unit has staff assigned or not -->
+    <div class="callout callout-info" ng-hide="unit.staff.length > 0">This unit has no staff assigned</div>
+    <div ng-show="unit.staff.length > 0">
+      <table class="table table-condensed table-hover table-pointer clearfix">
+        <thead>
+          <tr>
+            <th><a ng-click="sortOrder='1'; reverse=!reverse">Tutor Name <i ng-show="sortOrder=='1'" class="fa fa-caret-{{reverse ? 'down' : 'up'}}"></i></a></th>
+            <th><a ng-click="sortOrder='2'; reverse=!reverse">Tasks Left to Assess <i ng-show="sortOrder=='2'" class="fa fa-caret-{{reverse ? 'down' : 'up'}}"></i></a></th>
+            <th><a ng-click="sortOrder=''; reverse=!reverse">Number of Students <i ng-show="sortOrder==''" class="fa fa-caret-{{reverse ? 'down' : 'up'}}"></i></a></th>
+            <th><a ng-click="sortOrder='3'; reverse=!reverse">Oldest Submission Date <i ng-show="sortOrder=='3'" class="fa fa-caret-{{reverse ? 'down' : 'up'}}"></i></a></th>
+            <th><a ng-click="sortOrder='4'; reverse=!reverse">Latest Assessment Date <i ng-show="sortOrder=='4'" class="fa fa-caret-{{reverse ? 'down' : 'up'}}"></i></a></th>
+          </tr>
+        </thead>
+        <!-- tutors name will be filterd -->
+        <tbody>
+          <tr ng-repeat="data in unit.analytics.taskReadyToMarkStats | filter:search | orderBy:sortOrder:reverse">
+            <td>{{data.name}}</td>
+            <td>{{data.count}}</td>
+            <td>{{data.total_students}}</td>
+            <td>{{data.submission_date | date:'medium'}}</td>
+            <td>{{data.assessment_date | date:'medium'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
