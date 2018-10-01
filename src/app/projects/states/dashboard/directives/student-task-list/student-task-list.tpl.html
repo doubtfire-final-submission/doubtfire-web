@@ -1,19 +1,70 @@
 <div class="panel panel-primary">
+
+  <!--NEW-->
+
   <div class="panel-heading">
-    <input type="text" class="form-control" ng-model="filters.taskName" ng-change="taskNameChanged()" placeholder="Search tasks...">
+    <div class ="input-group">
+      <input type="text" class="form-control" ng-model="filters.taskName" ng-change="taskNameChanged()" placeholder="Search tasks...">
+      <span class="input-group-btn">
+        <button class="btn btn-default btn-search-opts-toggle" type="button" ng-model="showSearchOptions" btn-checkbox>
+          <i class="fa fa-chevron-{{showSearchOptions ? 'up' : 'down'}}"></i>
+        </button>
+      </span>
+    </div>
   </div>
+  <form class="panel-body panel-collapseable search-options" ng-show="showSearchOptions">
+   <div class="form-group sort-tasks">
+     <label>Sort Tasks</label>
+      <div class="btn-group">
+        <label class="btn btn-default ng-pristine ng-untouched ng-valid " ng-model="filters.topTask" btn-radio="true" ng-change="showTopTask()">Top Tasks
+        </label>
+        <label class="btn btn-default ng-pristine ng-untouched ng-valid" ng-model="filters.topTask" btn-radio="false" ng-change="showTopTask()">Sequence
+        </label>
+      </div>
+   </div>
+   <p class="help-block">Sort tasks priority wise.</p>
+   <div class="form-group hide-completed">
+    <label>View Option</label>
+     <div class="btn-group">
+      <label class="btn btn-default ng-pristine ng-untouched ng-valid " ng-model="filters.hideCompleted" btn-radio="true" ng-change="hideCompletedTask()">Hide Completed
+      </label>
+      <label class="btn btn-default ng-pristine ng-untouched ng-valid" ng-model="filters.hideCompleted" btn-radio="false" ng-change="hideCompletedTask()">Show All Tasks
+      </label>
+    </div>
+    <p class="help-block">Hide and unhide completed tasks.</p>
+   </div>-->
+    <!--
+    <div class="btn-group">
+      <label class="btn btn-default ng-pristine ng-untouched ng-valid " ng-model="filters.hideCompleted" btn-checkbox ng-change="hideCompletedTask()">
+      Hide Completed
+     </label>
+     <p>
+       It will hide all the completed tasks.
+     </p>
+     <label class="btn btn-default ng-pristine ng-untouched ng-valid " ng-model="filters.topTask" btn-checkbox ng-change="showTopTask()">
+      Show Top Tasks
+     </label>
+     <p>
+        Sort the task in the order they need to be done.
+     </p>
+    </div>-->
+  </form>
   <ul class="list-group">
     <li class="list-group-item list-group-item-task clearfix {{task.statusClass()}}"
       id="{{task.taskKeyToIdString()}}"
       ng-click="setSelectedTask(task)"
       ng-class="{selected: isSelectedTask(task)}"
-      ng-repeat="task in filteredTasks">
+      ng-repeat="task in filteredTasks | orderBy: getOrderBy()">
       <div class="task-data">
         <h4 class="list-group-item-heading">
           {{task.definition.name}}
         </h4>
         <p class="list-group-item-text">
           {{task.definition.abbreviation}} - {{gradeNames[task.definition.target_grade]}} Task <span class="due-time" ng-if="!task.isPastTargetDate() && !task.inFinalState()"><i class="fa fa-hourglass-half"></i> {{task.timeToDue()}}</span>
+        </p>
+        <p>
+          {{task.topWeight}}
+          {{task.topReason}}
         </p>
       </div><!--/task-data-->
       <div class="task-badges">
