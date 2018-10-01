@@ -1,52 +1,107 @@
 <div class="panel panel-primary">
   <div class="panel-heading">
     <div class="input-group">
-      <input type="text" class="form-control" ng-model="filters.studentName" ng-change="studentNameChanged()" placeholder="Search students...">
+      <input type="text" class="form-control" ng-model="filters.studentName" ng-change="studentNameChanged()"
+        placeholder="Search students...">
       <span class="input-group-btn">
         <button class="btn btn-default btn-search-opts-toggle" type="button" ng-model="showSearchOptions" btn-checkbox>
           <i class="fa fa-chevron-{{showSearchOptions ? 'up' : 'down'}}"></i>
         </button>
-      </span><!--/search-options-toggle-->
-    </div><!--/search-->
+      </span>
+      <!--/search-options-toggle-->
+    </div>
+    <!--/search-->
   </div>
   <form class="panel-body panel-collapseable search-options" ng-show="showSearchOptions">
-    <div class="form-group task-definition">
-      <label>Task Definition</label>
-      <div class="input-group col-sm-12">
-        <select
-          ng-model="filters.taskDefinitionIdSelected"
-          ng-options="td.id as (td.abbreviation + ' - ' + td.name) group by groupSetName(td.group_set_id) for td in unit.task_definitions | orderBy:'+seq'"
-          ng-change="taskDefinitionIdChanged()"
-          autofocus="{{autofocus.onTaskDefinitionSelect}}"
-          class="form-control input-md">
-          <option value="" ng-hide="!isTaskDefMode">All task definitions</option>
-        </select>
-      </div>
-      <p class="help-block">You can choose to display submissions of a specific task definition here.</p>
-    </div><!--/task-definition-->
-    <div class="form-group tutorial">
-      <label>Tutorials</label>
-      <div class="input-group col-sm-12">
-        <select
-          ng-model="filters.tutorialIdSelected"
-          ng-options="t.id as t.description for t in tutorials | orderBy:'abbreviation'"
-          ng-change="tutorialIdChanged()"
-          class="form-control input-md">
-        </select>
-      </div>
-      <p class="help-block">You can choose to display submissions from all tutorials or just your tutorials.</p>
-    </div><!--/tutorial-->
-  </form><!--/search-options-->
+    <!--Added New-->
+    <div>
+      <accordion close-others="false">
+        <accordion-group class="panel-default" is-open="isTaskDefMode" heading="Task Definition - {{filters.taskDefinitionIdSelected}}"
+          tooltip-placement="right" tooltip="You can choose to display submissions of a specific task definition here.">
+          <div class="form-group task-definition">
+            <div class="input-group col-sm-12">
+              <select ng-model="filters.taskDefinitionIdSelected" ng-options="td.id as (td.abbreviation + ' - ' + td.name) group by groupSetName(td.group_set_id) for td in unit.task_definitions | orderBy:'+seq'"
+                ng-change="taskDefinitionIdChanged()" autofocus="{{autofocus.onTaskDefinitionSelect}}" class="form-control input-md">
+                <option value="" ng-hide="isTaskDefMode">All task definitions</option>
+              </select>
+            </div>
+          </div>
+          <!--/task-definition-->
+        </accordion-group>
+        <accordion-group class="panel-default" heading="Tutorials - {{filters.tutorialIdSelected}}" tooltip-placement="right"
+          tooltip="You can choose to display submissions from all tutorials or just your tutorials.">
+          <div class="form-group tutorial">
+            <div class="input-group col-sm-12">
+              <select ng-model="filters.tutorialIdSelected" ng-options="t.id as t.description for t in tutorials | orderBy:'abbreviation'"
+                ng-change="tutorialIdChanged()" class="form-control input-md">
+              </select>
+            </div>
+          </div>
+          <!--/tutorial-->
+        </accordion-group>
+        <accordion-group class="panel-default" heading="Tutors - {{filters.tutorSelected}}" tooltip-placement="right"
+          tooltip="You can choose to display submissions from all students under a tutor.">
+          <div class="form-group tutorial">
+            <div class="input-group col-sm-12">
+              <select ng-model="filters.tutorSelected" ng-options="t for t in filters.tutorList" ng-change="tutorChanged()"
+                class="form-control input-md">
+                <option value="">Select Tutor</option>
+              </select>
+            </div>
+          </div>
+          <!--/tutors-->
+        </accordion-group>
+        <accordion-group class="panel-default" heading="Task Status - {{filters.taskFilterSelected.status}}"
+          tooltip-placement="right" tooltip="You can choose to display submissions according to task status.">
+          <div class="form-group tutorial">
+            <div class="input-group col-sm-12">
+              <div class="card-heading task-trigger-dropdown" ng-show="filters.customStatus.length > 0">
+                <div class="task-status hidden-sm hidden-xs" dropdown>
+                  <button type="button" class="btn btn-default form-control input-lg {{showStatusClass()}}"
+                    dropdown-toggle>
+                    <span class="pull-left">
+                      <i class="{{showIcon()}}"></i>
+                      {{showLabel()}}
+                    </span>
+                    <span class="pull-right">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                  </button>
+                  <!--/select-button-->
+                  <ul class="dropdown-menu" dropdown-menu>
+                    <li ng-repeat="selectedStatus in filters.customStatus" tooltip-append-to-body="true"
+                      tooltip-popup-delay="1000" tooltip-placement="right">
+                      <a ng-click="taskStatusFilterChanged(selectedStatus)">
+                        <status-icon status="selectedStatus.status" show-tooltip="false"></status-icon>
+                        {{selectedStatus.label}}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <select class="form-control input-lg visible-sm visible-xs" ng-options="selectedStatus.status as selectedStatus.label for selectedStatus in filters.customStatus"
+                  ng-model="filters.taskFilterSelected" ng-change="taskStatusFilterChanged(filters.taskFilterSelected)">
+                </select>
+              </div>
+            </div>
+          </div>
+          <!--/task status-->
+        </accordion-group>
+      </accordion>
+    </div>
+
+    <button type="button" class="btn btn-default" ng-csv="getCSVData" lazy-load="true" csv-header="getCSVHeader()"
+      filename="student-project-export.csv" target="_blank">
+      <i class="fa fa-file-excel-o"></i>
+      <i class="fa fa-download"></i> Export CSV
+    </button>
+
+  </form>
+
+  <!--/search-options-->
   <ul class="list-group">
-    <li class="list-group-item list-group-item-task clearfix {{task.statusClass()}}"
-      id="{{task.taskKeyToIdString()}}"
-      ng-click="setSelectedTask(task)"
-      ng-class="{selected: isSelectedTask(task)}"
-      ng-repeat="task in filteredTasks">
-      <user-icon
-        user="task.project()"
-        email="task.project().student_email"
-        size="50">
+    <li class="list-group-item list-group-item-task clearfix {{task.statusClass()}}" id="{{task.taskKeyToIdString()}}"
+      ng-click="setSelectedTask(task)" ng-class="{selected: isSelectedTask(task)}" ng-repeat="task in filteredTasks">
+      <user-icon user="task.project()" email="task.project().student_email" size="50">
       </user-icon>
       <div class="task-data">
         <h4 class="list-group-item-heading">
@@ -55,7 +110,7 @@
         <p class="list-group-item-text">
           {{task.definition.abbreviation}} - {{task.definition.name}}
         </p>
-        <div class="list-group-item-text-extended" ng-show="isSelectedTask(task)"> 
+        <div class="list-group-item-text-extended" ng-show="isSelectedTask(task)">
           <p>
             {{task.project().shortTutorialDescription()}}
           </p>
@@ -66,7 +121,8 @@
             Assessed {{task.times_assessed}} time{{task.times_assessed == 1 ? "" : "s"}}
           </p>
         </div>
-      </div><!--/task-data-->
+      </div>
+      <!--/task-data-->
       <div class="task-badges">
         <status-icon status="task.status"></status-icon>
         <div class="task-superscript-badges">
@@ -82,8 +138,10 @@
             {{task.gradeDesc()}}
           </span>
         </div>
-      </div><!--/badges-->
-    </li><!--/task-->
+      </div>
+      <!--/badges-->
+    </li>
+    <!--/task-->
     <li ng-show="filteredTasks.length == 0" class="list-group-item text-center text-muted">
       No tasks to display.
     </li>

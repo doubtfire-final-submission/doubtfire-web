@@ -48,6 +48,7 @@
       &.demonstrate       { @include custom-box-shadow(lighten(task-status-color('demonstrate'), 15%)); }
       &.complete          { @include custom-box-shadow(lighten(task-status-color('complete'), 15%)); }
       &.time-exceeded     { @include custom-box-shadow(lighten(task-status-color('time-exceeded'), 15%)); }
+      &.all               { @include custom-box-shadow(lighten(task-status-color('all'), 15%)); }
     }
     &.selected {
       &.ready-to-mark     { @include custom-box-shadow(task-status-color('ready-to-mark')); }
@@ -62,6 +63,7 @@
       &.demonstrate       { @include custom-box-shadow(task-status-color('demonstrate')); }
       &.complete          { @include custom-box-shadow(task-status-color('complete')); }
       &.time-exceeded     { @include custom-box-shadow(task-status-color('time-exceeded')); }
+      &.all               { @include custom-box-shadow(lighten(task-status-color('all'), 15%)); }
     }
     .task-badges {
       width: 50px;

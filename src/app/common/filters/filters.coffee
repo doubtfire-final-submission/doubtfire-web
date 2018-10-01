@@ -184,6 +184,10 @@ angular.module("doubtfire.common.filters", [])
   (tasks, statusKeys) ->
     return tasks unless tasks?
     return [] if _.isEmpty statusKeys
+    
+    #Added by Kishan
+    return tasks if statusKeys == 'all'
+    #
     _.filter tasks, (task) -> _.includes(statusKeys, task.status)
 )
 

@@ -12,7 +12,7 @@ angular.module('doubtfire.units.states.tasks.inbox.directives.staff-task-list', 
     unitRole: '='
     filters: '=?'
     showSearchOptions: '=?'
-  controller: ($scope, $timeout, $filter, Unit, taskService, alertService, currentUser, groupService, listenerService, dateService, projectService) ->
+  controller: ($scope, $timeout, $filter, Unit, taskService, alertService, currentUser, groupService, listenerService, dateService, projectService, analyticsService) ->
     # Cleanup
     listeners = listenerService.listenTo($scope)
     # Check taskSource exists
@@ -28,6 +28,10 @@ angular.module('doubtfire.units.states.tasks.inbox.directives.staff-task-list', 
       studentName: null
       tutorialIdSelected: if ($scope.unitRole.role == 'Tutor' || 'Convenor') && $scope.userHasTutorials then 'mine' else 'all'
       tutorials: []
+      customStatus: []
+      taskFilterSelected: null
+      tutorSelected: null
+      tutorList: []
       taskDefinitionIdSelected: null
       taskDefinition: null
     }, $scope.filters)
@@ -36,17 +40,29 @@ angular.module('doubtfire.units.states.tasks.inbox.directives.staff-task-list', 
       filteredTasks = $filter('tasksOfTaskDefinition')($scope.tasks, $scope.filters.taskDefinition)
       filteredTasks = $filter('tasksInTutorials')(filteredTasks, $scope.filters.tutorials)
       filteredTasks = $filter('tasksWithStudentName')(filteredTasks, $scope.filters.studentName)
+      
+      filteredTasks = $filter('tasksWithStatuses')(filteredTasks, $scope.filters.taskFilterSelected.status)
+      if($scope.filters.tutorSelected != null)
+        filteredTasks = $filter('showTasks')(filteredTasks, 'mine', $scope.filters.tutorSelected )
+      #
       $scope.filteredTasks = filteredTasks
     # Let's call having a source of tasksForDefinition plus having a task definition
     # auto-selected with the search options open task def mode -- i.e., the mode
     # for selecting tasks by task definitions
     $scope.isTaskDefMode = $scope.taskData.source == Unit.tasksForDefinition && $scope.filters?.taskDefinitionIdSelected? && $scope.showSearchOptions?
+    #$scope.isTaskDefMode = $scope.taskData.source == Unit.tasksForDefinition
+    ###
     openTaskDefs = ->
+
+    
       # Automatically "open" the task definition select element if in task def mode
       selectEl = document.querySelector('select[ng-model="filters.taskDefinitionIdSelected"]')
       selectEl.size = 10
       selectEl.focus()
+
     $timeout openTaskDefs if $scope.isTaskDefMode
+    ###
+
     # Tutorial options
     $scope.tutorials = _.map($scope.unit.tutorials.concat([
       { id: 'all',  description: 'All tutorials',     abbreviation: '__all'  }
@@ -57,8 +73,61 @@ angular.module('doubtfire.units.states.tasks.inbox.directives.staff-task-list', 
           tutorial.description = tutorial.abbreviation + ' - ' + tutorial.description
       tutorial
     )
+
+    $scope.filters.customStatus = taskService.statusKeys
+    $scope.filters.customStatus = _.map(taskService.statusKeys, taskService.statusData)
+    $scope.filters.taskFilterSelected = $scope.filters.customStatus[0]
+
+    $scope.taskStatusFilterChanged = (selectedStatus)->
+      $scope.filters.taskFilterSelected = selectedStatus
+      applyFilters()
+      
+    $scope.showIcon = () ->
+      taskService.statusIcons[$scope.filters.taskFilterSelected.status]
+
+    $scope.showLabel = () ->
+      taskService.statusLabels[$scope.filters.taskFilterSelected.status]
+
+    $scope.showStatusClass = () ->
+      taskService.statusData($scope.filters.taskFilterSelected.status).class
+
+    angular.forEach($scope.unit.tutorials, (tutorial) ->
+      if tutorial.tutor_name not in $scope.filters.tutorList
+        $scope.filters.tutorList.push(tutorial.tutor_name)
+    )
+
+    $scope.tutorChanged = () ->
+      applyFilters()
+
+
+    #exporting the data
+    # CSV header func
+    $scope.getCSVHeader = ->
+      result = ['student_code', 'name', 'email', 'task_abbreviation', 'status', 'tutor']
+      result
+    
+    # CSV data row func
+    $scope.getCSVData = ->
+      analyticsService.event 'Teacher View - Filtered Students Tab', 'Export CSV data'
+      result = []
+      angular.forEach($scope.filteredTasks, (task) ->
+        row = {}
+        row['student_code'] = task.project().student_id
+        row['name'] = task.project().student_name
+        row['email'] = task.project().student_email
+        row['task_abbreviation'] = task.definition.name
+        row['status'] = task.status
+        if task.project().tutorial
+          row['lab'] = task.project().tutorial.tutor_name
+        else
+          row['lab'] = ""
+        result.push row
+      )
+      result
+
     $scope.tutorialIdChanged = ->
       tutorialId = $scope.filters.tutorialIdSelected
+     
       if tutorialId == 'mine'
         $scope.filters.tutorials = $scope.unit.tutorialsForUserName(currentUser.profile.name)
       else if tutorialId == 'all'
