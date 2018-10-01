@@ -83,6 +83,12 @@ $task-status-colors: (
     dark:  darken(#d93713, 15%),
     light: lighten(#d93713, 15%),
     fore:  $task-status-foreground-color-light
+  ),
+  all:(
+    base:  #4b5b6b,
+    dark:  darken(#4b5b6b, 15%),
+    light: lighten(#4b5b6b, 15%),
+    fore:  $task-status-foreground-color-light
   )
 
 );

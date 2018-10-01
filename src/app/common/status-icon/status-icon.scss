@@ -30,5 +30,6 @@ status-icon {
     &.demonstrate       { @include status-icon('demonstrate');      }
     &.complete          { @include status-icon('complete');         }
     &.fail              { @include status-icon('fail');             }
+    &.all               { @include status-icon('all');              }
   }
 }

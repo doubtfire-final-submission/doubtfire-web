@@ -32,7 +32,7 @@
       </label>
     </div>
     <p class="help-block">Hide and unhide completed tasks.</p>
-   </div>-->
+   </div>
     <!--
     <div class="btn-group">
       <label class="btn btn-default ng-pristine ng-untouched ng-valid " ng-model="filters.hideCompleted" btn-checkbox ng-change="hideCompletedTask()">
@@ -80,9 +80,6 @@
         <div class="task-subscript-badges">
           <span class="task-subscript-badge grade-badge" ng-if="task.hasGrade()">
             {{task.gradeDesc()}}
-          </span>
-          <span class="task-subscript-badge quality-badge" ng-if="task.hasQualityPoints()">
-            <sup>{{task.quality_pts}}</sup>&frasl;<sub>{{task.definition.max_quality_pts}}</sub>
           </span>
           <span class="task-subscript-badge soon-badge" ng-if="task.isToBeCompletedSoon() && ! task.isDueSoon()">
             <i class="fa fa-clock-o"></i>

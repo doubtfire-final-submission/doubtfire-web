@@ -7,6 +7,7 @@ angular.module("doubtfire.common.services.tasks", [])
   taskService = {}
 
   taskService.statusKeys = [
+    'all'
     'not_started'
     'do_not_resubmit'
     'redo'
@@ -146,6 +147,7 @@ angular.module("doubtfire.common.services.tasks", [])
     complete:           'Complete'
     fail:               'Fail'
     time_exceeded:      'Time Exceeded'
+    all:                'All'
 
   taskService.statusIcons =
     ready_to_mark:      'fa fa-thumbs-o-up'
@@ -160,6 +162,7 @@ angular.module("doubtfire.common.services.tasks", [])
     complete:           'fa fa-check'
     fail:               'fa fa-times'
     time_exceeded:      'fa fa-clock-o'
+    all:                'fa fa-reorder'
 
   taskService.statusColors =
     # Please make sure this matches task-status-colors.less
@@ -175,6 +178,7 @@ angular.module("doubtfire.common.services.tasks", [])
     complete:          '#5BB75B'
     fail:              '#d93713'
     time_exceeded:     '#d93713'
+    all:               '#4b5b6b'
 
   taskService.statusSeq =
     not_started:        1
@@ -243,6 +247,10 @@ angular.module("doubtfire.common.services.tasks", [])
       detail: "Time limit exceeded"
       reason: "This work was submitted after the deadline, having missed both the target date and deadline."
       action: "It is now your responsibility to ensure this task is at an adequate standard in your portfolio. This task will not be considered to be Complete, which may limit your maximum grade."
+    all:
+      detail: "Shows all task"
+      reason: "Just used for filters"
+      action: "Returns all tasks"
 
   # Statuses students/tutors can switch tasks to
   taskService.switchableStates =

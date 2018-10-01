@@ -29,7 +29,7 @@ angular.module('doubtfire.projects.states.dashboard.directives.student-task-list
     # Sets new filteredTasks variable
     applyFilters = ->
       filteredTasks = $filter('tasksWithName')($scope.project.activeTasks(), $scope.filters.taskName)
-      #filteredTasks = $filter('orderBy')(filteredTasks, 'definition.seq')
+      filteredTasks = $filter('orderBy')(filteredTasks, 'definition.seq')
       #Added by Manish
       ###
       if($scope.filters.hideCompleted)
