@@ -20,15 +20,44 @@ angular.module('doubtfire.projects.states.dashboard.directives.student-task-list
     # Set up filters
     $scope.filters = {
       taskName: null
+
+      #Added by Manish
+      hideCompleted: true
+      topTask: true
+      #
     }
     # Sets new filteredTasks variable
     applyFilters = ->
       filteredTasks = $filter('tasksWithName')($scope.project.activeTasks(), $scope.filters.taskName)
+      filteredTasks = $filter('orderBy')(filteredTasks, 'definition.seq')
+      #Added by Manish
+      ###
+      if($scope.filters.hideCompleted)
+        filteredTasks = $filter('tasksWithStatusesNot')(filteredTasks, 'complete')
+      
+      if($scope.filters.hideCompleted)
+        comTasks = $filter('tasksWithStatuses')(filteredTasks, 'complete')
+        filteredTasks = $filter('filter')(filteredTasks,comTasks)
+      ###
+      if($scope.filters.hideCompleted)
+        filteredTasks = filteredTasks.filter (task) -> task.status != 'complete'
+      #
       $scope.filteredTasks = filteredTasks
     # Apply filters first-time
     applyFilters()
 
+    #Added by Manish
+    $scope.hideCompletedTask = applyFilters
+
     $scope.project.calcTopTasks()
+
+    $scope.getOrderBy = () ->
+      if $scope.filters.topTask
+        'topWeight'
+      else
+        'definition.seq'
+
+    #End Here
 
     # When refreshing tasks, we are just reloading the active tasks
     $scope.refreshTasks = applyFilters

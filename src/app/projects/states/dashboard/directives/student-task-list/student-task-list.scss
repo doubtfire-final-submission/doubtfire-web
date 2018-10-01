@@ -1,3 +1,12 @@
 student-task-list {
   @include task-list();
 }
+
+.form-group.sort-tasks{
+      height: 60px;
+      width: 235px; 
+    }
+.form-group.hide-completed{
+  height: 70px;
+  width: 250px;
+}

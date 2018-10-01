@@ -47,6 +47,10 @@ angular.module('doubtfire.units.states.analytics', [
       title: "Task Statistics"
       subtitle: "Click a lab code's circle in the legend to remove the lab from the graph. Double click the lab code's circle to make this lab the only visible lab in the graph"
       seq: 5
+    taskReadyToBeMarkedStats:
+      title: "Tutor Statistics"
+      subtitle: "Tasks ready to mark by Tutor"
+      seq: 6
 
   #
   # Sets the active tab
