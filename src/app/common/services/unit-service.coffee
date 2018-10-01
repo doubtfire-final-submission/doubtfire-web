@@ -306,6 +306,39 @@ angular.module("doubtfire.common.services.units", [])
       else
         'No Tutorial'
 
+    student.calcTopTasks = () ->
+      #
+      # sort tasks by start date
+      #
+      sortedTasks = _.sortBy(_.sortBy(_.filter(student.tasks, (task) -> _.includes taskService.validTopTask, task.status), 'definition.seq'), 'definition.start_date')
+
+      currentWeight = 0
+
+      overdueTasks = _.filter sortedTasks, (task) ->
+        taskService.daysPastTargetDate(task) > 0
+
+      #
+      # Step 2: select tasks not complete that are overdue
+      #
+      for grade in gradeService.gradeValues
+        overdueGradeTasks = _.filter overdueTasks, (task) ->
+          task.definition.target_grade == grade
+
+        _.forEach overdueGradeTasks, (task) ->
+          task.topWeight = currentWeight
+          task.topReason = "Complete this #{gradeService.grades[grade]} task to get back on track."
+          currentWeight++
+
+      #
+      # Step 3: ... up to date, so look forward
+      #
+      toAdd = _.filter sortedTasks, (task) -> taskService.daysUntilTargetDate(task) >= 0
+      # Add tasks by grade... pass is always done first!
+      _.forEach toAdd, (task) ->
+        task.topWeight = currentWeight
+        task.topReason = "Complete this #{gradeService.grades[grade]} task to get back on track."
+        currentWeight++
+
     # Switch's the student's current tutorial to a new tutorial, either specified
     # by object or id.
     student.switchToTutorial = (tutorial) ->
