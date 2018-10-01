@@ -32,6 +32,7 @@ angular.module('doubtfire.groups.group-selector', [])
     # Filtering
     applyFilters = ->
       if $scope.unitRole? # apply staff filter
+        #alert $scope.staffFilter
         filteredGroups = $filter('groupsInTutorials')($scope.selectedGroupSet.groups, $scope.unitRole, $scope.staffFilter)
       else # apply project filter
         filteredGroups = $filter('groupsForStudent')($scope.selectedGroupSet.groups, $scope.project, $scope.selectedGroupSet)
@@ -100,13 +101,17 @@ angular.module('doubtfire.groups.group-selector', [])
     $scope.unit.getGroups($scope.selectedGroupSet.id) if $scope.selectedGroupSet?.groups?
 
     # Staff filter options (convenor should see all)
+    $scope.staffFilter = 'all'
+    ###
     $scope.staffFilter = {
       Convenor: 'all',
       Tutor: 'mine'
     }[$scope.unitRole.role] if $scope.unitRole?
-
+    ###
     # Changing staff filter reapplies filter
-    $scope.onChangeStaffFilter = applyFilters
+    $scope.onChangeStaffFilter = (value)->
+      $scope.staffFilter = value
+      applyFilters()
 
     # Search text reapplies filter
     $scope.searchTextChanged = applyFilters
